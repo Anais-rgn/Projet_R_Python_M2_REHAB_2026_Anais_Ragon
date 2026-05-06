@@ -1,0 +1,104 @@
+
+
+# ==========================================================
+# STATISTICAL ANALYSIS FOR REPRODUCIBILITY STUDY
+# ==========================================================
+# 
+# Scientific Question:
+# What is the reproducibility of instrumental angular velocity during passive elbow extension in healthy subjects?
+#
+#
+# Hypothesis:
+# Instrumental biomechanical parameters show good intra-session  reproducibility in healthy subjects.
+#
+# Author: [Anaïs RAGON + Co Pilot]
+# Date: [12/05/2026]
+# ==========================================================
+
+
+
+```{r}
+install.packages("irr")
+install.packages("psych")
+setwd(here::here("data"))
+install.packages("kableExtra")  
+```
+
+```{r}
+library(tidyverse)
+library(irr)
+
+
+# ==========================================================
+# LOAD DATA
+# ==========================================================
+# Data exported from Python analysis
+
+df <- read.csv("data/velocity_trials_clean.csv")
+cat("Working directory:", getwd(), "\n")
+head(df)
+```
+```{r}
+# ==========================================================
+# ICC ANALYSIS — INTRA-SESSION RELIABILITY
+# ==========================================================
+
+library(tidyverse)
+library(irr)
+
+df <- read.csv("data/velocity_trials_clean.csv")
+
+# Create the subjet
+df <- df %>%
+  mutate(subject = paste(patient_id, side, sep = "_"))
+
+# ==========================================================
+# FUNCTION ICC BY SPEED
+# ==========================================================
+
+compute_icc <- function(speed_name) {
+  
+  df_speed <- df %>%
+    filter(speed == speed_name)
+  
+  # Switch to wide format (trials = columns)
+  df_wide <- df_speed %>%
+    select(subject, trial, velocity) %>%
+    pivot_wider(names_from = trial, values_from = velocity)
+  
+  # Remove the “Subject” column
+  icc_data <- df_wide %>%
+    select(-subject)
+  
+  # ICC
+  res <- icc(icc_data,
+             model = "twoway",
+             type = "agreement",
+             unit = "single")
+  
+  cat("\n============================\n")
+  cat("Speed:", speed_name, "\n")
+  print(res)
+  
+  return(res)
+}
+
+# ==========================================================
+# RUN ICC
+# ==========================================================
+
+icc_slow   <- compute_icc("slow")
+icc_medium <- compute_icc("medium")
+icc_fast   <- compute_icc("fast")
+```
+
+
+
+
+
+
+
+
+
+)
+
