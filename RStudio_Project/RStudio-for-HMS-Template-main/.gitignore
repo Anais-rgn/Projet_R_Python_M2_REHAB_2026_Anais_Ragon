@@ -11,13 +11,7 @@
 
 *.lnk
 
-# data results files should NOT be disclosed, except those in the test directory
-# https://stackoverflow.com/questions/5533050/gitignore-exclude-folder-but-include-specific-subfolder
 
-# exclude all items in data
-data/*
-# but not the test_data directory
-!data/test_data/ 
 
 # debug logs are stored in the debug folder
 debug/
