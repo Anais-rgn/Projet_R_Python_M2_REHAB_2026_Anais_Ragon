@@ -1,95 +1,186 @@
+---
+title: "Intra-Session Reproducibility of Elbow Extension Velocity"
+subtitle: "Statistical Analysis — ICC Study"
+author: "Anaïs RAGON + Claude"
+date: "12/05/2026"
+output:
+  html_document:
+    theme: flatly
+    highlight: tango
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    number_sections: false
+    df_print: kable
+---
 
-
-# ==========================================================
-# STATISTICAL ANALYSIS FOR REPRODUCIBILITY STUDY
-# ==========================================================
-# 
-# Scientific Question:
-# What is the reproducibility of instrumental angular velocity during passive elbow extension in healthy subjects?
-#
-#
-# Hypothesis:
-# Instrumental biomechanical parameters show good intra-session  reproducibility in healthy subjects.
-#
-# Author: [Anaïs RAGON + Co Pilot]
-# Date: [12/05/2026]
-# ==========================================================
-
-
-
-```{r}
-install.packages("irr")
-install.packages("psych")
-setwd(here::here("data"))
-install.packages("kableExtra")  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
 ```
 
-```{r}
+---
+
+## 🔬 Scientific Context
+
+> **Research question:** What is the reproducibility of instrumental angular velocity
+> during passive elbow extension in healthy subjects?
+
+> **Hypothesis:** Instrumental biomechanical parameters show good intra-session
+> reproducibility in healthy subjects.
+
+---
+
+## 📋 Part 3 — Intra-Session Reproducibility Analysis
+
+### Objective
+
+Assess the intra-session reproducibility of angular velocity during **passive elbow
+extension** across three speed conditions (**slow**, **medium**, **fast**) using the
+Intraclass Correlation Coefficient (ICC).
+
+### Inputs
+
+- `velocity_trials_clean.csv` — exported from Part 2 (Python), one row per trial
+- **Columns:** `patient_id` · `side` · `speed` · `trial` · `velocity` (°/s)
+
+### Method
+
+1. Data is reshaped from **long to wide format**: one row per subject, one column per trial
+2. ICC is computed using the `irr` package:
+
+| Parameter | Value | Meaning |
+|-----------|-------|---------|
+| `model` | `"twoway"` | Subjects **and** trials treated as random effects |
+| `type` | `"agreement"` | Absolute agreement — penalises systematic differences |
+| `unit` | `"single"` | Reliability of a single trial → **ICC(A,1)** |
+
+3. Packages are installed only if missing (`requireNamespace`) — **safe on any machine**
+4. Results interpreted using **Koo & Mae (2016)** thresholds:
+
+| ICC value | Interpretation |
+|-----------|---------------|
+| < 0.50 | Poor |
+| 0.50 – 0.75 | Moderate |
+| 0.75 – 0.90 | Good |
+| > 0.90 | Excellent |
+
+---
+
+## 📦 Packages
+
+```{r packages}
+if (!requireNamespace("tidyverse", quietly = TRUE)) install.packages("tidyverse")
+if (!requireNamespace("irr",       quietly = TRUE)) install.packages("irr")
+if (!requireNamespace("knitr",     quietly = TRUE)) install.packages("knitr")
+
 library(tidyverse)
 library(irr)
-
-
-# ==========================================================
-# LOAD DATA
-# ==========================================================
-# Data exported from Python analysis
-
-df <- read.csv("data/velocity_trials_clean.csv")
-cat("Working directory:", getwd(), "\n")
-head(df)
+library(knitr)
 ```
-```{r}
-# ==========================================================
-# ICC ANALYSIS — INTRA-SESSION RELIABILITY
-# ==========================================================
 
-library(tidyverse)
-library(irr)
+---
 
-df <- read.csv("data/velocity_trials_clean.csv")
+## 📂 Load Data
 
-# Create the subjet
+```{r load_data}
+df <- read.csv("data/velocity_trials_clean.csv", stringsAsFactors = FALSE)
+
+cat("Rows:", nrow(df), "| Columns:", ncol(df), "\n")
+kable(head(df), caption = "Preview — velocity_trials_clean.csv")
+```
+
+---
+
+## 📐 ICC Analysis
+
+```{r icc_function}
+# Create unique subject ID (patient + side)
 df <- df %>%
   mutate(subject = paste(patient_id, side, sep = "_"))
 
-# ==========================================================
-# FUNCTION ICC BY SPEED
-# ==========================================================
+# ----------------------------------------------------------
+# FUNCTION: compute ICC for one speed condition
+# ----------------------------------------------------------
+compute_icc <- function(speed_name, data) {
 
-compute_icc <- function(speed_name) {
-  
-  df_speed <- df %>%
-    filter(speed == speed_name)
-  
-  # Switch to wide format (trials = columns)
-  df_wide <- df_speed %>%
+  df_wide <- data %>%
+    filter(speed == speed_name) %>%
     select(subject, trial, velocity) %>%
-    pivot_wider(names_from = trial, values_from = velocity)
-  
-  # Remove the “Subject” column
-  icc_data <- df_wide %>%
+    pivot_wider(names_from  = trial,
+                values_from = velocity) %>%
     select(-subject)
-  
-  # ICC
-  res <- icc(icc_data,
+
+  if (nrow(df_wide) < 2 || ncol(df_wide) < 2) {
+    cat("\n[WARNING] Not enough data for speed:", speed_name, "\n")
+    return(NULL)
+  }
+
+  res <- icc(df_wide,
              model = "twoway",
-             type = "agreement",
-             unit = "single")
-  
+             type  = "agreement",
+             unit  = "single")
+
   cat("\n============================\n")
   cat("Speed:", speed_name, "\n")
   print(res)
-  
   return(res)
 }
+```
 
-# ==========================================================
-# RUN ICC
-# ==========================================================
+### Slow condition
 
-icc_slow   <- compute_icc("slow")
-icc_medium <- compute_icc("medium")
-icc_fast   <- compute_icc("fast")
+```{r icc_slow}
+icc_slow <- compute_icc("slow", df)
+```
+
+### Medium condition
+
+```{r icc_medium}
+icc_medium <- compute_icc("medium", df)
+```
+
+### Fast condition
+
+```{r icc_fast}
+icc_fast <- compute_icc("fast", df)
+```
+
+---
+
+## 📊 Summary Table
+
+```{r results_table}
+extract_icc_row <- function(res, speed_name) {
+  if (is.null(res)) return(NULL)
+  data.frame(
+    Speed          = speed_name,
+    ICC            = round(res$value,   3),
+    p_value        = round(res$p.value, 4),
+    CI_lower       = round(res$lbound,  3),
+    CI_upper       = round(res$ubound,  3),
+    Interpretation = case_when(
+      res$value < 0.50 ~ "Poor",
+      res$value < 0.75 ~ "Moderate",
+      res$value < 0.90 ~ "Good",
+      TRUE             ~ "Excellent"
+    )
+  )
+}
+
+results_df <- bind_rows(
+  extract_icc_row(icc_slow,   "Slow"),
+  extract_icc_row(icc_medium, "Medium"),
+  extract_icc_row(icc_fast,   "Fast")
+)
+
+kable(results_df,
+      col.names = c("Speed", "ICC(A,1)", "p-value",
+                    "95% CI lower", "95% CI upper", "Interpretation"),
+      caption   = "Intra-session reproducibility — ICC results (Koo & Mae, 2016)")
 ```
 
 
@@ -97,8 +188,4 @@ icc_fast   <- compute_icc("fast")
 
 
 
-
-
-
-)
 
