@@ -1,9 +1,5 @@
-# Projet_R_Python_M2_REHAB_2026 : Master's internship Anaïs RAGON + Claude — May 2026
+Projet_R_Python_M2_REHAB_2026 : Master's internship Anaïs RAGON + Claude — May 2026
 # Pilot Study — Intra-Session Reproducibility of Instrumental Elbow Extension Velocity in Healthy Subjects
-# Pilot Study — Intra-Session Reproducibility of Instrumental Elbow Extension Velocity in Healthy Subjects
-
-**Python & R project — Master's internship in Physical Medicine and Rehabilitation (MPR)**
-*Anaïs RAGON + Claude — May 2026*
 
 ---
 
