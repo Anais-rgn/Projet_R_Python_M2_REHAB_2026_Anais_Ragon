@@ -9,7 +9,7 @@ Projet_R_Python_M2_REHAB_2026 : Master's internship Anaïs RAGON + Claude — Ma
 
 Spasticity is a frequent motor symptom following central nervous system injury (stroke, traumatic brain injury, spinal cord injury). It is defined as a **velocity-dependent increase in muscle tone**, causing functional limitations, pain, and significant impairment in daily life activities.
 
-Current clinical assessment relies on standardised scales such as the **Modified Tardieu Scale (MTS)** and the Modified Ashworth Scale (MAS). However, these tools have well-documented limitations, in particular **poor inter- and intra-rater reproducibility**, which limits their reliability for longitudinal monitoring and clinical research.
+Current clinical assessment relies on standardised scales such as the **Modified Tardieu Scale (MTS)** and the **Modified Ashworth Scale (MAS**). However, these tools have well-documented limitations, in particular **poor inter- and intra-rater reproducibility**, which limits their reliability for longitudinal monitoring and clinical research.
 
 Inertial Measurement Units (IMU) and portable dynamometers now offer the possibility of obtaining **objective, quantified, and reproducible measurements**. Combining these two technologies could provide a precise instrumental quantification of spasticity.
 
@@ -88,7 +88,7 @@ Raw CSV files (K-Push + K-Move)
         │   • Convert quaternions → elbow angle (°)
         │
         ▼
-[Part 2 — Python]  Event detection & velocity analysis
+[Part 2 — Python]  Application of Filter, Event detection & velocity analysis
         │   • Low-pass Butterworth filter (4th order, cutoff 10 Hz)
         │   • Peak detection (find_peaks) → 9 extensions, 9 flexions
         │   • Group by speed: trials 1–3 = slow, 4–6 = medium, 7–9 = fast
