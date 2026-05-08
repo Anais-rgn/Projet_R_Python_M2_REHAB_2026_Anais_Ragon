@@ -71,12 +71,8 @@ Both limbs (right / left) were tested for each subject.
 
 ### 2.5 Derived Variables Analysed
 
-- Mean and maximum **angular velocity** (°/s)
-- **Range of motion** (ROM) in degrees (°)
-- Peak force (N)
-- Angle at peak force (°)
-- Mean force (N)
-- Movement duration (s)
+- Mean **angular velocity** (°/s)
+
 
 ---
 
