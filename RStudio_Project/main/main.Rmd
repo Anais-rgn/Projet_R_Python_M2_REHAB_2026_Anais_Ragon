@@ -87,10 +87,12 @@ library(knitr)
 ## 📂 Load Data
 
 ```{r load_data}
-df <- read.csv("data/velocity_trials_clean.csv", stringsAsFactors = FALSE)
+# Finds the data folder relative to the .Rmd file location,
+# regardless of the computer or working directory
+data_path <- file.path(dirname(rstudioapi::getSourceEditorContext()$path),
+                       "data", "velocity_trials_clean.csv")
+df <- read.csv(data_path, stringsAsFactors = FALSE)
 
-cat("Rows:", nrow(df), "| Columns:", ncol(df), "\n")
-kable(head(df), caption = "Preview — velocity_trials_clean.csv")
 ```
 
 ---
