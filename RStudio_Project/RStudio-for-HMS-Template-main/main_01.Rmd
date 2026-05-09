@@ -102,6 +102,13 @@ kable(head(df), caption = "Preview — velocity_trials_clean.csv")
 df <- df %>%
   mutate(subject = paste(patient_id, side, sep = "_"))
 
+# Verify the column exists
+cat("Columns available:", paste(names(df), collapse = ", "), "\n")
+cat("Unique subjects:", paste(unique(df$subject), collapse = ", "), "\n")
+```
+
+
+```{r}
 # ----------------------------------------------------------
 # FUNCTION: compute ICC for one speed condition
 # ----------------------------------------------------------
