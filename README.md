@@ -193,11 +193,21 @@ if (!requireNamespace("knitr",     quietly = TRUE)) install.packages("knitr")
 
 ## 7. How to Run
 
+
+### 🐍 Python (Parts 1 & 2)
 1. Place all raw CSV files in the `data/` folder
 2. Run `Part1_parsing_angles.ipynb` → produces angle time-series per subject and side
 3. Run `Part2_detection_analysis.ipynb` → produces `velocity_trials_clean.csv`
-4. Open `Part3_ICC_analysis.Rmd` in RStudio and click **Knit** → produces the ICC report
 
+### 📊 R (Part 3)
+1. Open `RStudio_Project/RStudio_Project.Rproj` in RStudio
+   → this sets the working directory automatically
+2. Make sure `velocity_trials_clean.csv` is in the `RStudio_Project/data/` subfolder
+   (it is already included in the repository)
+3. Open `main.Rmd` and click **Knit** → produces the ICC report
+
+> ⚠️ Always open R via the `.Rproj` file — this sets the working directory
+> automatically to the right folder, which fixes all path errors.
 ---
 
 ## 8. Reference
